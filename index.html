@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wind Budget Calculator + Target Width in MILs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f4f4f4; padding: 1.5em; max-width: 600px; margin: auto; }
+    label, input, button { display: block; width: 100%; margin: 1em 0; font-size: 1.1em; padding: 0.75em; box-sizing: border-box; }
+    button { background: #007aff; color: white; border: none; border-radius: 6px; }
+    .output { font-size: 1.2em; margin-top: 1em; background: white; padding: 1em; border-radius: 6px; border: 1px solid #ccc; }
+    .output span { display: block; margin-top: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>Wind Budget Calculator</h1>
+
+  <label for="targetSize">Target Size (inches)</label>
+  <input type="number" id="targetSize" inputmode="decimal" placeholder="e.g., 10" />
+
+  <label for="distance">Distance (yards)</label>
+  <input type="number" id="distance" inputmode="decimal" placeholder="e.g., 500" />
+
+  <label for="windHold">Wind Hold (MILs)</label>
+  <input type="number" id="windHold" inputmode="decimal" step="0.01" placeholder="e.g., 0.9" />
+
+  <button onclick="calculateWindBudget()">Calculate Wind Budget</button>
+
+  <div class="output" id="output">
+    <span>Result will appear here.</span>
+  </div>
+
+  <script>
+    function calculateWindBudget() {
+      const targetSize = parseFloat(document.getElementById("targetSize").value);
+      const distance = parseFloat(document.getElementById("distance").value);
+      const windHold = parseFloat(document.getElementById("windHold").value);
+      const output = document.getElementById("output");
+
+      if (isNaN(targetSize) || isNaN(distance) || isNaN(windHold) || distance <= 0) {
+        output.innerHTML = "<span>❌ Please enter all valid numbers.</span>";
+        return;
+      }
+
+      const targetWidthMIL = (targetSize / 36) / (distance / 1000);
+      const windBudget = windHold / targetWidthMIL;
+      const halfBudgetInMils = (windBudget * targetWidthMIL) / 2;
+
+      output.innerHTML = `
+        <span>🎯 Target Width: ${targetWidthMIL.toFixed(3)} MILs</span>
+        <span>✅ Wind Budget: ${windBudget.toFixed(2)} target widths</span>
+        <span>↔️ Safe wind call error: ±${halfBudgetInMils.toFixed(2)} MILs</span>
+      `;
+    }
+  </script>
+</body>
+</html>
