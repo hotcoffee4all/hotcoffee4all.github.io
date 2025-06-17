@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wind Budget Calculator + Target Shapes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f4f4f4; padding: 1.5em; max-width: 600px; margin: auto; }
+    label, select, input, button { display: block; width: 100%; margin: 1em 0; font-size: 1.1em; padding: 0.75em; box-sizing: border-box; }
+    button { background: #007aff; color: white; border: none; border-radius: 6px; }
+    .output { font-size: 1.3em; margin-top: 1em; background: white; padding: 1em; border-radius: 6px; border: 1px solid #ccc; }
+    .target-shape { text-align: center; margin-top: 2em; }
+    .target-shape img { width: 200px; max-width: 90%; border: 1px solid #ccc; border-radius: 8px; padding: 0.5em; background: #fff; }
+  </style>
+</head>
+<body>
+  <h1>Wind Budget Calculator</h1>
+
+  <label for="targetShape">Target Shape</label>
+  <select id="targetShape">
+    <option value="circle">⭕ Circle</option>
+    <option value="square">◼️ Square</option>
+    <option value="triangle">🔺 Triangle</option>
+    <option value="diamond">💠 Diamond</option>
+    <option value="ipsc">🧍 IPSC Silhouette</option>
+    <option value="kyl">➕ KYL Rack</option>
+    <option value="coyote">🐺 Coyote</option>
+    <option value="groundhog">🐾 Groundhog</option>
+    <option value="head">🧠 Head</option>
+  </select>
+
+  <label for="targetSize">Target Size (inches)</label>
+  <input type="number" id="targetSize" inputmode="decimal" placeholder="e.g., 8" />
+
+  <label for="distance">Distance (yards)</label>
+  <input type="number" id="distance" inputmode="decimal" placeholder="e.g., 500" />
+
+  <label for="windHold">Wind Hold (MILs)</label>
+  <input type="number" id="windHold" inputmode="decimal" step="0.01" placeholder="e.g., 1.2" />
+
+  <button onclick="calculateWindBudget()">Calculate Wind Budget</button>
+
+  <div class="output" id="output">Result will appear here.</div>
+
+  <div class="target-shape">
+    <img id="shapeImage" src="" alt="Target Shape Preview" style="display:none;" />
+  </div>
+
+  <script>
+    function calculateWindBudget() {
+      const targetSize = parseFloat(document.getElementById("targetSize").value);
+      const distance = parseFloat(document.getElementById("distance").value);
+      const windHold = parseFloat(document.getElementById("windHold").value);
+      const output = document.getElementById("output");
+
+      if (isNaN(targetSize) || isNaN(distance) || isNaN(windHold) || distance <= 0) {
+        output.textContent = "❌ Please enter all valid numbers.";
+        return;
+      }
+
+      const targetWidthMIL = (targetSize / 36) / (distance / 1000);
+      const windBudget = windHold / targetWidthMIL;
+      output.textContent = `✅ Wind Budget: ${windBudget.toFixed(1)} target widths`;
+
+      const shape = document.getElementById("targetShape").value;
+      const shapeImg = document.getElementById("shapeImage");
+
+      let shapeSrc = "";
+      switch(shape) {
+        case "circle":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Black_circle_frame.svg/512px-Black_circle_frame.svg.png";
+          break;
+        case "square":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Black_square.svg/512px-Black_square.svg.png";
+          break;
+        case "triangle":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Black_triangle.svg/512px-Black_triangle.svg.png";
+          break;
+        case "diamond":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Black_diamond_shape.svg/512px-Black_diamond_shape.svg.png";
+          break;
+        case "ipsc":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/IPSC_target.svg/512px-IPSC_target.svg.png";
+          break;
+        case "kyl":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Metal_targets.svg/512px-Metal_targets.svg.png";
+          break;
+        case "coyote":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Coyote_silhouette.svg/512px-Coyote_silhouette.svg.png";
+          break;
+        case "groundhog":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Groundhog_silhouette.svg/512px-Groundhog_silhouette.svg.png";
+          break;
+        case "head":
+          shapeSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Human_head_silhouette.svg/512px-Human_head_silhouette.svg.png";
+          break;
+      }
+
+      shapeImg.src = shapeSrc;
+      shapeImg.style.display = "block";
+    }
+  </script>
+</body>
+</html>
