@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wind Budget Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    label { margin-top: 10px; display: block; }
+    input { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+    button { margin-top: 15px; padding: 10px; width: 100%; font-size: 16px; }
+    #results { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Wind Budget Calculator</h1>
+  <label for="windMin">Min Wind Speed (mph):</label>
+  <input type="number" id="windMin" step="0.1">
+
+  <label for="windMax">Max Wind Speed (mph):</label>
+  <input type="number" id="windMax" step="0.1">
+
+  <label for="distance">Target Distance (yards):</label>
+  <input type="number" id="distance" step="1">
+
+  <label for="targetWidth">Target Width (inches):</label>
+  <input type="number" id="targetWidth" step="0.1">
+
+  <label for="bc">Bullet BC (G7):</label>
+  <input type="number" id="bc" step="0.001">
+
+  <label for="mv">Muzzle Velocity (fps):</label>
+  <input type="number" id="mv" step="1">
+
+  <button id="calculateBtn">Calculate Wind Budget</button>
+
+  <div id="results"></div>
+
+  <script>
+    document.getElementById('calculateBtn').addEventListener('click', function () {
+      const windMin = parseFloat(document.getElementById('windMin').value);
+      const windMax = parseFloat(document.getElementById('windMax').value);
+      const distance = parseFloat(document.getElementById('distance').value);
+      const targetWidth = parseFloat(document.getElementById('targetWidth').value);
+      const bc = parseFloat(document.getElementById('bc').value);
+      const mv = parseFloat(document.getElementById('mv').value);
+
+      if ([windMin, windMax, distance, targetWidth, bc, mv].some(isNaN)) {
+        document.getElementById('results').innerHTML = "<p>Please fill in all fields.</p>";
+        return;
+      }
+
+      const drift = (wind, yds, bcVal, mvVal) => {
+        const driftInches = (wind * yds) / (15 * bcVal) * (2750 / mvVal);
+        return driftInches / (yds * 36) * 1000;
+      };
+
+      const driftMin = drift(windMin, distance, bc, mv);
+      const driftMax = drift(windMax, distance, bc, mv);
+      const avgDrift = (driftMin + driftMax) / 2;
+      const widthMils = (targetWidth / 36) / distance * 1000;
+      const windBudget = widthMils / avgDrift;
+
+      document.getElementById('results').innerHTML = `
+        <p>Min Drift: ${driftMin.toFixed(2)} mils</p>
+        <p>Max Drift: ${driftMax.toFixed(2)} mils</p>
+        <p>Target Width: ${widthMils.toFixed(2)} mils</p>
+        <p><strong>Wind Budget: ${windBudget.toFixed(2)} mils</strong></p>
+      `;
+    });
+  </script>
+</body>
+</html>
